@@ -1,0 +1,25 @@
+Configure all network options as usual, change all of the primary adapters to LAN unless it is the Firewall, in which case make it the second under the WAN.
+Configure firewall first, I didn't use VLANs for mine and just use static addresses like 10.0.5.2 (das mine)
+Once you got both the WAN and LAN up, configure the Workstation. Disable IPV6 and in IPV4 assign the necessary addresses, and for now make the gateway and the DNS the same number.
+The domain isn't made yet, but assign static stuff as needed. Once we get the Active Directory set up, change the DNS to the IP you use for that.
+Anyway, search your gateway and set up the firewall via PFSense, my only advice is to uncheck the box that blocks RFC1918 networks.
+RFC1918 networks are networks that are private. If you're on public wifi, you're not on one of those. These networks are imperative to prevent being breached, since you need to make sure not just anyone can hitch a ride on your wifi.
+Configuring the Active Directory is easy, if you know how sconfig works, and it's not too hard to understand. No need to create the domain yet, since you don't have the proper software by default, you can make it if you want.
+Once you configure the basic network settings of your Active Directory, leave sconfig and Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
+This installs the domain services and of course allows you to tamper with it.
+Next, Install-ADDSForest -DomainName (name of domain)
+This installs a forest into the Domain of your choice.
+Say YES to everything.
+Make sure the DNS is configured to AD's on the Workstation, and join it to the domain. If you have problems from here, you spelled something wrong (possibly the slash)
+Finally, configure then Management Server. This has a GUI in the Server Manager.
+Before this, go through the network song and dance again.
+Install the following Features:
+AD DS and AD LDS Tools
+DHCP Server Tools
+DNS Server Tools
+File Services Tools
+You can find these under Remote Server Administration Tools > Role Administration Tools
+Add the AD to the list of managed servers.
+Log into it with the proper AD credentials, by right clicking the active directory and logging in using Manage As...
+Set the Pointer records for the other devices.
+I've wanted to look into Forests and the exact definition of an LDS evades me.
