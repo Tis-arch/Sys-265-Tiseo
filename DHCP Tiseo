@@ -1,0 +1,6 @@
+Firstly, you need to download (via the Add Roles and Features) the DHCP Server, Remote Server Administration Tools, and the DHCP Server tools to the Active Directory.
+Remote Server Admin Tools are not required, but if you do not use that, then you will need to make the scope and everything manually via command line in the AD.
+In the DHCP, right click IPv4 and add a new scope. Insert the necessary settings.
+Release and renew on your workstation.
+IF YOU GET A PRIVATE IP NOT IN THE RANGE THEN YOU MAY HAVE TO DELETE AND MAKE THE SCOPE AGAIN (that's what fixed it for me anyway).
+DHCP is a tempermental mistress. You may have inputted everything correctly and you will need to remake the scope multiple times. Use the same settings, it took me 3 seperate tries.
