@@ -1,0 +1,36 @@
+First we have to edit our web server. Set the IP to whatever you want, using nmtui.
+As well, set hostname to web01-name.name.local
+To create the Sudo user, use useradd (name) and passwd (name). Save the password somewhere.
+Make that user an admin by typing usermod -aG wheel (name).
+Next, we need to go to our workstation to pfsense to enable SNMP services on the router.
+Under services on the dashboard page, click SNMP.
+Enable the Daemon and make sure to bind SNMP to the LAN interface.
+For the community string, use something other than public or private.
+Restart the service on the firewall by going into the pfsense shell and using snmpd restart.
+Now for nmon, do the nmtui shtick again but also add your domain to the search domain.
+Add a sudo user to nmon as well.
+Install snmp on nmon with sudo yum install net-snmp-utils.
+Remember, when using ssh, always use PuTTY, because Powershell is a weird mistress.
+Install snmp on web with sudo yum install net-snmp-utils net-snmp.
+Next, back up /etc/snmp/snmpd.conf and remove it.
+Using a text editor of your choice, write a new one. Here should be the only four lines in it.
+com2sec myNetwork (your full ip ending with .0 to capture the full network) (community string)
+group myROGroup v2c myNetwork
+view all included .1 80
+access myROGroup "" anynoauth exact all none none
+This should be a fine configuration, but if you know what you're doing than change it however.
+Allow port 161 and udp OR snmp using firewall-cmd --permanent --add-port=161/udp.
+Restart the console before testing to prevent spending lots of time figuring out why the server is timing out.
+Next, on our management server, install the SNMP service through features on Server Manager onto Active Directory.
+Make sure to also have the SNMP remote management features on management.
+When trying to connect using Computer Management to Active Directory, you'll likely get an error.
+To fix it, go to powershell in AD or powershell into AD via the management server, and type the following:
+Set-NetFirewallRule -DisplayGroup "Remote Event Log Management" -Enabled True
+Anyway, try Computer Management again. Under Services and Applications > Services > SNMP Service Properties
+Under the security tab, add your community string and add the nmon host to the list of hosts to accept packets from.
+Restart the service on AD, and it should work. Any timeouts are likely not allowing nmon to look at it.
+
+I was unfamiliar with what SNMP was before this but boy howdy *did I learn.*
+The community string is basically a password/public key, and should be configured as the default string is "public."
+SNMP is actually pretty unsecure if you take liberties. Like on the windows end, I found an option to allow *any* host through, as long as they have the key, which is a preeeeeetty big violation.
+I also didn't learn much about traps until I looked into them, except that they should be enabled at basically all times, to create a sort of threshold to communicate to the management system.
