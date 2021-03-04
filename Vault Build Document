@@ -1,0 +1,36 @@
+# Vault Config File
+# At volumes/config/vault.json
+{
+  "backend": {
+    "file": {
+      "path": "/vault/file"
+    }
+  },
+  "listener": {
+    "tcp":{
+      "address": "0.0.0.0:8200",
+      "tls_disable": 1
+    }
+  },
+  "ui": true
+}
+
+#Docker-Compose File Contents
+version: '2'
+services:
+  vault:
+    image: vault
+    container_name: vault
+    ports:
+      - "8200:8200"
+    restart: always
+    volumes:
+      - ./volumes/logs:/vault/logs
+      - ./volumes/file:/vault/file
+      - ./volumes/config:/vault/config
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -config=/vault/config/vault.json
+
+#Start Server
+docker-compose up
